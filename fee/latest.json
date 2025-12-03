@@ -1,5 +1,77 @@
 {
   "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
   "name": "fee",
-  "updated_at": ""
+  "description": "Iranian bank transfer fee configuration",
+  "currency": "IRR",
+  "version": 1,
+  "updated_at": "2025-12-04T00:00:00Z",
+
+  "transactions": [
+    {
+      "type_code": "CARD_TO_CARD",
+      "display_name": "انتقال وجه شتابی کارت به کارت/ کارت به شبا",
+      "min_amount_rial": 10000,
+      "max_amount_rial": 5000000000,
+      "calculation": {
+        "kind": "step",
+        "description": "حداقل ۷۲۰۰ ریال تا ۱۰ میلیون ریال (به ازای هر ۱۰ میلیون ریال مازاد ۲۸۰۰ ریال اضافه می‌شود.)",
+        "base_fee_rial": 7200,
+        "base_amount_rial": 10000000,
+        "step_fee_rial": 2800,
+        "step_amount_rial": 10000000
+      }
+    },
+    {
+      "type_code": "PAYA_INDIVIDUAL",
+      "display_name": "انتقال وجه بین‌بانکی پایا - انفرادی و شخصی",
+      "min_amount_rial": 10000,
+      "max_amount_rial": 5000000000,
+      "calculation": {
+        "kind": "percent_with_min_max",
+        "description": "۰.۰۱ درصد مبلغ تراکنش (با کف ۲۴۰۰ ریال و سقف ۳۰ هزار ریال)",
+        "percent": 0.01,
+        "min_fee_rial": 2400,
+        "max_fee_rial": 30000
+      }
+    },
+    {
+      "type_code": "PAYA_GROUP",
+      "display_name": "انتقال وجه بین‌بانکی پایا - گروهی",
+      "min_amount_rial": 0,
+      "max_amount_rial": 0,
+      "calculation": {
+        "kind": "file_and_per_tx",
+        "description": "برای تراکنش‌های بالای ۱۰ عدد ۱۲۰۰۰ ریال، هر فایل به اضافه هر واریز ۱۲۰۰ ریال",
+        "threshold_count": 10,
+        "file_fee_rial": 12000,
+        "per_transaction_fee_rial": 1200
+      }
+    },
+    {
+      "type_code": "SATNA",
+      "display_name": "انتقال وجه بین‌بانکی ساتنا",
+      "min_amount_rial": 1000000,
+      "max_amount_rial": 500000000000,
+      "calculation": {
+        "kind": "percent_with_min_max",
+        "description": "۰.۰۲ درصد مبلغ تراکنش تا سقف ۲۸۰ هزار ریال",
+        "percent": 0.02,
+        "min_fee_rial": 0,
+        "max_fee_rial": 280000
+      }
+    },
+    {
+      "type_code": "POL",
+      "display_name": "انتقال وجه به شیوه‌ی پل",
+      "min_amount_rial": 10000,
+      "max_amount_rial": 5000000000,
+      "calculation": {
+        "kind": "percent_with_min_max",
+        "description": "۰.۰۲ درصد مبلغ منتقل‌شده، حداقل مبلغ کارمزد ۵ هزار ریال",
+        "percent": 0.02,
+        "min_fee_rial": 5000,
+        "max_fee_rial": 0
+      }
+    }
+  ]
 }

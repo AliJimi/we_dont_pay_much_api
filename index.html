@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Interest Transfer Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="A modern Flutter app to calculate Iranian bank transfer fees and interest, with dynamic rules from backend, Rial/Toman display, multilingual UI, and dark mode."
+  />
+
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --bg-soft: #ffffff;
+      --bg-pill: #eef2ff;
+      --text: #020617;
+      --muted: #6b7280;
+      --primary: #4f46e5;
+      --primary-soft: #eef2ff;
+      --accent: #22c55e;
+      --border: #e5e7eb;
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #020617;
+        --bg-soft: #020617;
+        --bg-pill: rgba(79, 70, 229, 0.18);
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --primary: #6366f1;
+        --primary-soft: rgba(79, 70, 229, 0.14);
+        --accent: #22c55e;
+        --border: #1f2937;
+        --shadow-soft: 0 20px 60px rgba(15, 23, 42, 0.8);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, rgba(79, 70, 229, 0.08), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 18px 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #a5b4fc, transparent 55%),
+                  linear-gradient(135deg, var(--primary), #1d4ed8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+    }
+
+    .brand-text-main {
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      font-size: 16px;
+    }
+
+    .brand-text-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-switch {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.02);
+      gap: 2px;
+    }
+
+    .lang-pill {
+      border: none;
+      background: transparent;
+      border-radius: 999px;
+      padding: 4px 7px;
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+      min-width: 32px;
+      text-align: center;
+    }
+
+    .lang-pill.active {
+      background: var(--bg-pill);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .pill-link {
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.02);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .pill-link-icon {
+      font-size: 14px;
+    }
+
+    .pill-primary {
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), #1d4ed8);
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease,
+        filter 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .pill-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+      box-shadow: 0 16px 45px rgba(37, 99, 235, 0.7);
+    }
+
+    .pill-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.6);
+    }
+
+    .pill-primary-icon {
+      font-size: 15px;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .hero-wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 18px 16px 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+      gap: 26px;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero-wrap {
+        grid-template-columns: minmax(0, 1fr);
+        padding-bottom: 32px;
+      }
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.02);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      margin-bottom: 10px;
+    }
+
+    .hero-kicker-badge {
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      background: var(--bg-pill);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 3vw + 0.6rem, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      margin: 0 0 12px;
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(120deg, var(--primary), var(--accent));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 480px;
+    }
+
+    .hero-subtitle-secondary {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      max-width: 520px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .ghost-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .ghost-link-icon {
+      font-size: 16px;
+    }
+
+    .feature-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.02);
+      color: var(--muted);
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+    }
+
+    .chip-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      margin-right: 6px;
+      display: inline-block;
+    }
+
+    .hero-card {
+      border-radius: var(--radius-xl);
+      background:
+        radial-gradient(circle at top left, rgba(79, 70, 229, 0.2), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.18), transparent 55%),
+        var(--bg-soft);
+      border: 1px solid rgba(148, 163, 184, 0.38);
+      box-shadow: var(--shadow-soft);
+      padding: 18px 18px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .hero-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-live {
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      background: rgba(22, 163, 74, 0.12);
+      color: #22c55e;
+    }
+
+    .hero-card-pill {
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.3);
+      color: #c7d2fe;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+    }
+
+    .hero-card-body {
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.78);
+      color: #e5e7eb;
+      font-size: 12px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 10px;
+      direction: ltr; /* keep sample numbers LTR even in RTL */
+    }
+
+    @media (max-width: 900px) {
+      .hero-card-body {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .hero-card-body h3 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+    }
+
+    .hero-card-amount {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .hero-card-amount span.sub {
+      display: block;
+      font-size: 12px;
+      color: #9ca3af;
+      font-weight: 500;
+    }
+
+    .hero-card-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 3px;
+    }
+
+    .hero-card-row span.value {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .hero-card-tagline {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .hero-card-tagline span {
+      color: #a5b4fc;
+    }
+
+    .section-donate {
+      max-width: 1040px;
+      margin: 0 auto 40px;
+      padding: 0 16px;
+    }
+
+    .donate-card {
+      border-radius: var(--radius-xl);
+      padding: 18px 18px 16px;
+      border: 1px dashed rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.02);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .donate-text-main {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .donate-text-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .donate-link {
+      padding: 9px 16px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: #e5e7eb;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease,
+        background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .donate-link:hover {
+      transform: translateY(-1px);
+      background: #020617;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.7);
+    }
+
+    .donate-link-icon {
+      font-size: 15px;
+    }
+
+    .footer {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 14px 16px 24px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    @media (max-width: 640px) {
+      .footer {
+        flex-direction: column;
+      }
+    }
+
+    .footer a {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 3px;
+    }
+
+    /* Simple RTL support */
+    html[dir="rtl"] body {
+      font-family: system-ui, -apple-system, "IRANSans", "Tahoma", sans-serif;
+    }
+
+    html[dir="rtl"] .nav,
+    html[dir="rtl"] .hero-wrap,
+    html[dir="rtl"] .section-donate,
+    html[dir="rtl"] .footer {
+      direction: rtl;
+    }
+
+    html[dir="rtl"] .hero-subtitle,
+    html[dir="rtl"] .hero-subtitle-secondary,
+    html[dir="rtl"] .donate-text-main,
+    html[dir="rtl"] .donate-text-sub {
+      text-align: right;
+    }
+
+    html[dir="rtl"] .nav-right {
+      flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .brand {
+      flex-direction: row-reverse;
+    }
+
+    @media (max-width: 900px) {
+      html[dir="rtl"] .nav-right {
+        flex-wrap: wrap-reverse;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Top navigation -->
+    <header class="nav">
+      <div class="brand">
+        <div class="brand-logo">IT</div>
+        <div>
+          <div class="brand-text-main" data-i18n="brand-title">
+            Interest Transfer Calculator
+          </div>
+          <div class="brand-text-sub" data-i18n="brand-subtitle">
+            Flutter • Rial / Toman • IR banking
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <div class="lang-switch" aria-label="Language selector">
+          <button class="lang-pill active" data-lang-btn="en">EN</button>
+          <button class="lang-pill" data-lang-btn="fa">FA</button>
+          <button class="lang-pill" data-lang-btn="ar">AR</button>
+        </div>
+
+        <div class="nav-actions">
+          <a
+            class="pill-link"
+            href="#donate"
+          >
+            <span class="pill-link-icon">❤️</span>
+            <span data-i18n="nav-support">Support the project</span>
+          </a>
+
+          <a
+            class="pill-link"
+            href="https://yourname.github.io/interest-transfer-calculator/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span class="pill-link-icon">🐙</span>
+            <span data-i18n="nav-github-pages">GitHub Pages</span>
+          </a>
+
+          <a
+            class="pill-primary"
+            href="https://example.com/app-download"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span data-i18n="nav-download">Get the app</span>
+            <span class="pill-primary-icon">↗</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main hero -->
+    <main class="main">
+      <div class="hero-wrap">
+        <!-- Left: text -->
+        <section aria-labelledby="hero-title">
+          <div class="hero-kicker">
+            <span class="hero-kicker-badge" data-i18n="hero-badge">
+              Finance utility
+            </span>
+            <span data-i18n="hero-kicker-text">
+              Designed for Iranian transfer rules
+            </span>
+          </div>
+
+          <h1 id="hero-title" class="hero-title" data-i18n-html="hero-title">
+            Understand your <span class="highlight">bank transfer fees</span>
+            before you hit send.
+          </h1>
+
+          <p class="hero-subtitle" data-i18n="hero-subtitle">
+            A mobile app built with Flutter that calculates card-to-card,
+            پایا، ساتنا و پل fees dynamically from the latest backend tables —
+            with smart Rial / Toman display and dark mode support.
+          </p>
+
+          <p class="hero-subtitle-secondary" data-i18n="hero-subtitle-secondary">
+            محاسبه‌گر کارمزد و مبلغ نهایی انتقال وجه بر اساس «نوع خدمت»،
+            مبلغ، و آخرین نرخ‌های بانکی (شتابی، پایا، ساتنا، پل و ...).
+          </p>
+
+          <div class="hero-actions">
+            <a
+              class="pill-primary"
+              href="https://example.com/app-download"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span data-i18n="hero-cta-download">Download for Android</span>
+              <span class="pill-primary-icon">⬇</span>
+            </a>
+
+            <a
+              class="ghost-link"
+              href="https://github.com/your-org/interest-transfer-calculator"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="ghost-link-icon">★</span>
+              <span data-i18n="hero-cta-github">Star on GitHub</span>
+            </a>
+          </div>
+
+          <div class="feature-chips">
+            <div class="chip">
+              <span class="chip-dot"></span>
+              <span data-i18n="chip-live-rules">
+                Live fee tables from backend (REST)
+              </span>
+            </div>
+            <div class="chip">
+              <span class="chip-dot"></span>
+              <span data-i18n="chip-rial-toman">
+                Rial &amp; Toman with 1,000 separators
+              </span>
+            </div>
+            <div class="chip">
+              <span class="chip-dot"></span>
+              <span data-i18n="chip-dark-multi">
+                Dark mode • Multi-lingual (EN / FA / AR)
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right: glassmorphism mock card -->
+        <aside aria-label="App preview">
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <div class="hero-card-title">
+                <span data-i18n="card-title">Sample transfer</span>
+                <span class="badge-live" data-i18n="card-badge">
+                  Live rules
+                </span>
+              </div>
+              <div class="hero-card-pill" data-i18n="card-pill">
+                Shetabi • CARD_TO_CARD
+              </div>
+            </div>
+
+            <div class="hero-card-body">
+              <div>
+                <h3 data-i18n="card-col1-title">CALCULATION</h3>
+                <p class="hero-card-amount">
+                  <span data-i18n="card-main-amount">120,000,000 ریال</span>
+                  <span class="sub" data-i18n="card-main-amount-sub">
+                    12,000,000 تومان (base amount)
+                  </span>
+                </p>
+
+                <div class="hero-card-row">
+                  <span data-i18n="card-row-fee-label">Fee amount</span>
+                  <span class="value" data-i18n="card-row-fee-value">
+                    22,800 ریال
+                  </span>
+                </div>
+                <div class="hero-card-row">
+                  <span data-i18n="card-row-total-label">Total with fee</span>
+                  <span class="value" data-i18n="card-row-total-value">
+                    120,022,800 ریال
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <h3 data-i18n="card-col2-title">EXPLANATION</h3>
+                <div class="hero-card-row">
+                  <span data-i18n="card-row-base-label">First 10M</span>
+                  <span class="value" data-i18n="card-row-base-value">
+                    7,200 ریال
+                  </span>
+                </div>
+                <div class="hero-card-row">
+                  <span data-i18n="card-row-steps-label">
+                    + 4 × 10M extra
+                  </span>
+                  <span class="value" data-i18n="card-row-steps-value">
+                    4 × 2,800 ریال
+                  </span>
+                </div>
+                <div class="hero-card-row">
+                  <span data-i18n="card-row-source-label">Rule source</span>
+                  <span class="value" data-i18n="card-row-source-value">
+                    /api/transactions
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <p class="hero-card-tagline" data-i18n="card-tagline">
+              All rules are loaded dynamically from
+              <span>https://wdpm.asd.com/api/transactions</span>
+              so you don’t have to update the app every time the bank changes
+              its table.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Donate section -->
+    <section id="donate" class="section-donate" aria-label="Support the project">
+      <div class="donate-card">
+        <div>
+          <div class="donate-text-main" data-i18n="donate-main">
+            Enjoying the project? Help keep it maintained. 💚
+          </div>
+          <div class="donate-text-sub" data-i18n="donate-sub">
+            Open-source infra, backend hosting, and time all cost something.
+            Your donation helps keep the calculator accurate and up-to-date
+            with new banking rules.
+          </div>
+        </div>
+
+        <a
+          class="donate-link"
+          href="https://example.com/donate"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span class="donate-link-icon">☕</span>
+          <span data-i18n="donate-cta">Donate / Buy me a coffee</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div>
+        <span data-i18n="footer-copy">
+          © <span id="year"></span> Interest Transfer Calculator. Built with Flutter.
+        </span>
+      </div>
+      <div>
+        <a
+          href="mailto:hello@example.com"
+          data-i18n="footer-contact"
+        >Contact</a>
+        &nbsp;&middot;&nbsp;
+        <a
+          href="https://example.com/privacy"
+          target="_blank"
+          rel="noreferrer"
+          data-i18n="footer-privacy"
+        >Privacy</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // i18n dictionary
+    const translations = {
+      en: {
+        'brand-title': 'Interest Transfer Calculator',
+        'brand-subtitle': 'Flutter • Rial / Toman • IR banking',
+        'nav-support': 'Support the project',
+        'nav-github-pages': 'GitHub Pages',
+        'nav-download': 'Get the app',
+        'hero-badge': 'Finance utility',
+        'hero-kicker-text': 'Designed for Iranian transfer rules',
+        'hero-title':
+          'Understand your <span class="highlight">bank transfer fees</span> before you hit send.',
+        'hero-subtitle':
+          'A mobile app built with Flutter that calculates card-to-card, Paya, Satna and Pol fees dynamically from the latest backend tables — with smart Rial / Toman display and dark mode support.',
+        'hero-subtitle-secondary':
+          'An Iranian-focused transfer calculator that shows base, fee and final amount with a clean breakdown, using live fee tables from your backend API.',
+        'hero-cta-download': 'Download for Android',
+        'hero-cta-github': 'Star on GitHub',
+        'chip-live-rules': 'Live fee tables from backend (REST)',
+        'chip-rial-toman': 'Rial & Toman with 1,000 separators',
+        'chip-dark-multi': 'Dark mode • Multi-lingual (EN / FA / AR)',
+        'card-title': 'Sample transfer',
+        'card-badge': 'Live rules',
+        'card-pill': 'Shetabi • CARD_TO_CARD',
+        'card-col1-title': 'CALCULATION',
+        'card-main-amount': '120,000,000 ریال',
+        'card-main-amount-sub': '12,000,000 تومان (base amount)',
+        'card-row-fee-label': 'Fee amount',
+        'card-row-fee-value': '22,800 ریال',
+        'card-row-total-label': 'Total with fee',
+        'card-row-total-value': '120,022,800 ریال',
+        'card-col2-title': 'EXPLANATION',
+        'card-row-base-label': 'First 10M',
+        'card-row-base-value': '7,200 ریال',
+        'card-row-steps-label': '+ 4 × 10M extra',
+        'card-row-steps-value': '4 × 2,800 ریال',
+        'card-row-source-label': 'Rule source',
+        'card-row-source-value': '/api/transactions',
+        'card-tagline':
+          'All rules are loaded dynamically from <span>https://wdpm.asd.com/api/transactions</span> so you don’t have to update the app every time the bank changes its table.',
+        'donate-main': 'Enjoying the project? Help keep it maintained. 💚',
+        'donate-sub':
+          'Open-source infra, backend hosting, and time all cost something. Your donation helps keep the calculator accurate and up-to-date with new banking rules.',
+        'donate-cta': 'Donate / Buy me a coffee',
+        'footer-copy':
+          '© <span id="year"></span> Interest Transfer Calculator. Built with Flutter.',
+        'footer-contact': 'Contact',
+        'footer-privacy': 'Privacy'
+      },
+      fa: {
+        'brand-title': 'محاسبه‌گر کارمزد انتقال وجه',
+        'brand-subtitle': 'فلاتر • نمایش ریال / تومان • قوانین بانکی ایران',
+        'nav-support': 'حمایت از پروژه',
+        'nav-github-pages': 'صفحهٔ گیت‌هاب',
+        'nav-download': 'دانلود برنامه',
+        'hero-badge': 'ابزار مالی',
+        'hero-kicker-text': 'طراحی‌شده برای قوانین بانکی ایران',
+        'hero-title':
+          'قبل از زدن دکمهٔ تأیید، <span class="highlight">کارمزد انتقال وجه</span> را دقیق حساب کن.',
+        'hero-subtitle':
+          'یک اپلیکیشن موبایل با فلاتر که کارمزد شتابی، پایا، ساتنا و پل را بر اساس آخرین جداول کارمزد بک‌اند محاسبه می‌کند — با نمایش هوشمند ریال / تومان و پشتیبانی از حالت تیره.',
+        'hero-subtitle-secondary':
+          'محاسبه‌گر مبلغ پایه، کارمزد و مبلغ نهایی انتقال وجه، بر اساس نوع خدمت، مبلغ و قوانین پویا؛ مناسب برای کاربر نهایی، توسعه‌دهنده و تحلیل‌گر مالی.',
+        'hero-cta-download': 'دانلود نسخهٔ اندروید',
+        'hero-cta-github': 'ستاره در گیت‌هاب',
+        'chip-live-rules': 'دریافت زندهٔ جداول کارمزد از API',
+        'chip-rial-toman': 'نمایش ریال و تومان با جداکنندهٔ هزارگان',
+        'chip-dark-multi': 'حالت تیره • چندزبانه (انگلیسی / فارسی / عربی)',
+        'card-title': 'نمونهٔ انتقال',
+        'card-badge': 'قوانین زنده',
+        'card-pill': 'شتابی • CARD_TO_CARD',
+        'card-col1-title': 'محاسبه',
+        'card-main-amount': '۱۲۰,۰۰۰,۰۰۰ ریال',
+        'card-main-amount-sub': '۱۲,۰۰۰,۰۰۰ تومان (مبلغ پایه)',
+        'card-row-fee-label': 'مبلغ کارمزد',
+        'card-row-fee-value': '۲۲,۸۰۰ ریال',
+        'card-row-total-label': 'مبلغ نهایی با کارمزد',
+        'card-row-total-value': '۱۲۰,۰۲۲,۸۰۰ ریال',
+        'card-col2-title': 'توضیحات',
+        'card-row-base-label': '۱۰ میلیون اول',
+        'card-row-base-value': '۷,۲۰۰ ریال',
+        'card-row-steps-label': '۴ × ۱۰ میلیون مازاد',
+        'card-row-steps-value': '۴ × ۲,۸۰۰ ریال',
+        'card-row-source-label': 'منبع قانون',
+        'card-row-source-value': '/api/transactions',
+        'card-tagline':
+          'تمام قوانین کارمزد به‌صورت پویا از <span>https://wdpm.asd.com/api/transactions</span> خوانده می‌شود؛ بدون نیاز به انتشار نسخهٔ جدید با هر تغییر جدول کارمزد.',
+        'donate-main': 'اگر این پروژه به دردتان خورده، از آن حمایت کنید. 💚',
+        'donate-sub':
+          'زیرساخت، هاست بک‌اند و زمان توسعه رایگان نیست. حمایت شما کمک می‌کند این محاسبه‌گر همیشه به‌روز و دقیق بماند.',
+        'donate-cta': 'حمایت مالی / یک قهوه 😊',
+        'footer-copy':
+          '© <span id="year"></span> محاسبه‌گر کارمزد انتقال وجه. ساخته‌شده با فلاتر.',
+        'footer-contact': 'ارتباط',
+        'footer-privacy': 'حریم خصوصی'
+      },
+      ar: {
+        'brand-title': 'حاسبة رسوم التحويل البنكي',
+        'brand-subtitle': 'Flutter • عرض الريال / التومان • القواعد البنكية الإيرانية',
+        'nav-support': 'ادعم المشروع',
+        'nav-github-pages': 'صفحة GitHub',
+        'nav-download': 'تحميل التطبيق',
+        'hero-badge': 'أداة مالية',
+        'hero-kicker-text': 'مصممة لقواعد التحويل البنكي في إيران',
+        'hero-title':
+          'احسب <span class="highlight">رسوم التحويل البنكي</span> قبل أن تضغط على زر الإرسال.',
+        'hero-subtitle':
+          'تطبيق موبايل مبني بفلاتر يحسب رسوم بطاقة إلى بطاقة، بايا، ساتنا وبول اعتمادًا على أحدث جداول الرسوم من خادمك — مع عرض ذكي للريال / التومان ودعم للوضع الداكن.',
+        'hero-subtitle-secondary':
+          'يعرض المبلغ الأساسي، قيمة الرسوم، والمبلغ النهائي بشكل شفاف؛ مناسب للمستخدمين والمطورين والخبراء الماليين.',
+        'hero-cta-download': 'تحميل نسخة أندرويد',
+        'hero-cta-github': 'ضع نجمة على GitHub',
+        'chip-live-rules': 'جداول الرسوم مباشرة من API',
+        'chip-rial-toman': 'عرض الريال والتومان مع فواصل الآلاف',
+        'chip-dark-multi': 'وضع داكن • متعدد اللغات (EN / FA / AR)',
+        'card-title': 'تحويل نموذجي',
+        'card-badge': 'قواعد مباشرة',
+        'card-pill': 'شبكي • CARD_TO_CARD',
+        'card-col1-title': 'الحساب',
+        'card-main-amount': '١٢٠,٠٠٠,٠٠٠ ریال',
+        'card-main-amount-sub': '١٢,٠٠٠,٠٠٠ تومان (المبلغ الأساسي)',
+        'card-row-fee-label': 'قيمة الرسوم',
+        'card-row-fee-value': '٢٢,٨٠٠ ریال',
+        'card-row-total-label': 'الإجمالي مع الرسوم',
+        'card-row-total-value': '١٢٠,٠٢٢,٨٠٠ ریال',
+        'card-col2-title': 'الشرح',
+        'card-row-base-label': 'أول ١٠ ملايين',
+        'card-row-base-value': '٧,٢٠٠ ریال',
+        'card-row-steps-label': '+ ٤ × ١٠ ملايين إضافية',
+        'card-row-steps-value': '٤ × ٢,٨٠٠ ریال',
+        'card-row-source-label': 'مصدر القاعدة',
+        'card-row-source-value': '/api/transactions',
+        'card-tagline':
+          'يتم تحميل جميع قواعد الرسوم ديناميكيًا من <span>https://wdpm.asd.com/api/transactions</span>، لذلك لا تحتاج لتحديث التطبيق كلما تغيّرت الجداول البنكية.',
+        'donate-main': 'هل أعجبك المشروع؟ ساهم في استمراره. 💚',
+        'donate-sub':
+          'استضافة الخادم مفتوحة المصدر ووقت التطوير ليست مجانية. تبرعك يساعد في إبقاء الحاسبة دقيقة ومواكبة لتغيّرات البنوك.',
+        'donate-cta': 'تبرع / اشترِ لي قهوة',
+        'footer-copy':
+          '© <span id="year"></span> حاسبة رسوم التحويل البنكي. مبنية بفلاتر.',
+        'footer-contact': 'تواصل',
+        'footer-privacy': 'الخصوصية'
+      }
+    };
+
+    function applyTranslations(lang) {
+      const dict = translations[lang] || translations.en;
+      document.documentElement.setAttribute('data-lang', lang);
+      document.documentElement.lang = lang;
+      document.documentElement.dir = (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr';
+
+      // text-only keys
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          el.textContent = dict[key];
+        }
+      });
+
+      // HTML keys (for titles with <span class="highlight"> etc.)
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (dict[key]) {
+          el.innerHTML = dict[key];
+        }
+      });
+
+      // fix year after overwriting innerHTML of footer-copy
+      const yearSpan = document.getElementById('year');
+      if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear().toString();
+      }
+
+      // activate language pills
+      document.querySelectorAll('[data-lang-btn]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-lang-btn') === lang);
+      });
+
+      // persist
+      try {
+        localStorage.setItem('itc_lang', lang);
+      } catch (_) {}
+    }
+
+    // Language switch listeners
+    document.querySelectorAll('[data-lang-btn]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-lang-btn');
+        applyTranslations(lang);
+      });
+    });
+
+    // Set year initial
+    document.getElementById('year').textContent =
+      new Date().getFullYear().toString();
+
+    // Initial language from localStorage or browser
+    (function initLang() {
+      let lang = 'en';
+      try {
+        const saved = localStorage.getItem('itc_lang');
+        if (saved && translations[saved]) lang = saved;
+      } catch (_) {}
+      applyTranslations(lang);
+    })();
+  </script>
+</body>
+</html>

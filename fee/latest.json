@@ -11,7 +11,7 @@
       "type_code": "CARD_TO_CARD",
       "display_name": "انتقال وجه شتابی کارت به کارت/ کارت به شبا",
       "min_amount_rial": 10000,
-      "max_amount_rial": 5000000000,
+      "max_amount_rial": 1500000000,
       "calculation": {
         "kind": "step",
         "description": "حداقل ۷۲۰۰ ریال تا ۱۰ میلیون ریال (به ازای هر ۱۰ میلیون ریال مازاد ۲۸۰۰ ریال اضافه می‌شود.)",

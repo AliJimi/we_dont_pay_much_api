@@ -15,9 +15,9 @@
       "calculation": {
         "kind": "step",
         "description": "حداقل ۷۲۰۰ ریال تا ۱۰ میلیون ریال (به ازای هر ۱۰ میلیون ریال مازاد ۲۸۰۰ ریال اضافه می‌شود.)",
-        "base_fee_rial": 7200,
+        "base_fee_rial": 9000,
         "base_amount_rial": 10000000,
-        "step_fee_rial": 2800,
+        "step_fee_rial": 3200,
         "step_amount_rial": 10000000
       }
     },
@@ -30,8 +30,8 @@
         "kind": "percent_with_min_max",
         "description": "۰.۰۱ درصد مبلغ تراکنش (با کف ۲۴۰۰ ریال و سقف ۳۰ هزار ریال)",
         "percent": 0.01,
-        "min_fee_rial": 2400,
-        "max_fee_rial": 30000
+        "min_fee_rial": 3000,
+        "max_fee_rial": 75000
       }
     },
     {

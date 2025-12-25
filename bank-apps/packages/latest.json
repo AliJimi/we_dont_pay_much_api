@@ -1,0 +1,11 @@
+{
+  "packages": [
+    {"package": "com.dotin.wepod", "app_name": "WePod"},
+    {"package": "com.refah.superapp", "app_name": "Refah Mobile Bank"},
+    {"package": "com.gardeshpay.app", "app_name": "TouBank"},
+    {"package": "ir.bmi.bam.nativeweb", "app_name": "Baam"},
+    {"package": "com.samanpr.blu", "app_name": "Blu"},
+    {"package": "com.sibche.aspardproject.app", "app_name": "AsanPardakht"},
+    {"package": "ir.tejaratbank.tata.mobile.android.tejarat", "app_name": "Tejarat Hamrah Bank"}
+  ]
+}

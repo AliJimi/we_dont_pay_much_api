@@ -61,16 +61,29 @@
       }
     },
     {
-      "type_code": "POL",
-      "display_name": "انتقال وجه به شیوه‌ی پل",
+      "type_code": "POL_ONLINE",
+      "display_name": "انتقال وجه به شیوه‌ی پل اینترنتی",
       "min_amount_rial": 10000,
-      "max_amount_rial": 5000000000,
+      "max_amount_rial": 500000000,
       "calculation": {
         "kind": "percent_with_min_max",
         "description": "۰.۰۲ درصد مبلغ منتقل‌شده، حداقل مبلغ کارمزد ۵ هزار ریال",
         "percent": 0.02,
         "min_fee_rial": 5000,
-        "max_fee_rial": 0
+        "max_fee_rial": 100000
+      }
+    },
+    {
+      "type_code": "POL_BANK",
+      "display_name": "انتقال وجه به شیوه‌ی پل در بانک",
+      "min_amount_rial": 10000,
+      "max_amount_rial": 1000000000,
+      "calculation": {
+        "kind": "percent_with_min_max",
+        "description": "۰.۰۲ درصد مبلغ منتقل‌شده، حداقل مبلغ کارمزد ۵ هزار ریال",
+        "percent": 0.02,
+        "min_fee_rial": 5000,
+        "max_fee_rial": 200000
       }
     }
   ]
